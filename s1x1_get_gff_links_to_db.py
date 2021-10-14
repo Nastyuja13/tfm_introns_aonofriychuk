@@ -26,7 +26,7 @@ def get_full_genome_gff3_url(ensembl_response_html, url, spc):
     if len(links) == 0:
         err = f'Error obtaining the {spc} full GFF link'
         print(err)
-        with open('ErrorLogEnsemblTables.txt','a') as errorlog:
+        with open(config.ERRORLOG_DIR / 'ErrorLogEnsemblTables.txt','a') as errorlog:
             errorlog.write(err + '\n')
         print(RuntimeError('No links available'))
     else:
@@ -79,7 +79,7 @@ def _parse_ensembl_table(html, ensembl_site):
         except requests.exceptions.ConnectionError:
             err = f'Error downloading the {species_name} GFF repository: {url}'
             print(err)
-            with open('ErrorLogEnsemblTables.txt','a') as errorlog:
+            with open(config.ERRORLOG_DIR /'ErrorLogEnsemblTables.txt','a') as errorlog:
                 errorlog.write(err + '\n')
             continue
 
@@ -89,7 +89,7 @@ def _parse_ensembl_table(html, ensembl_site):
         if len(full_gff3_url) == 0:
             err = f'Error downloading the {species_name} GFF'
             print(err)
-            with open('ErrorLogEnsemblTables.txt','a') as errorlog:
+            with open(config.ERRORLOG_DIR /'ErrorLogEnsemblTables.txt','a') as errorlog:
                 errorlog.write(err + '\n')
             continue
 
@@ -132,10 +132,10 @@ def _parse_ensembl_table(html, ensembl_site):
 def get_ensembl_species_info(ensembl_sites=None):
 
     htmls = {'metazoa': config.ENSEMBL_METAZOA_HTML,
-             #'fungi': config.ENSEMBL_FUNGI_HTML,
-             #'protists': config.ENSEMBL_PROTISTS_HTML,
-             'main': config.ENSEMBL_HTML #,
-             #'plant': config.ENSEMBL_PLANTS_HTML
+             'fungi': config.ENSEMBL_FUNGI_HTML,
+             'protists': config.ENSEMBL_PROTISTS_HTML,
+             'main': config.ENSEMBL_HTML,
+             'plant': config.ENSEMBL_PLANTS_HTML
              }
 
     if ensembl_sites is None:

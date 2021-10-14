@@ -59,13 +59,13 @@ def download_gff(url):
             if os.path.isfile(gff3_path) == True:
                 print('Successfull download')
             else:
-                with open('ErrorLogGffDownload.txt', 'a') as errorlog:
+                with open(config.ERRORLOG_DIR /'ErrorLogGffDownload.txt', 'a') as errorlog:
                     errorlog.write(f'File {filename} failed to be downloaded\n')
                 errorlog.close()
                 print('Download failed')
                 
         except requests.exceptions.ConnectionError:
-            with open('ErrorLogGffDownload.txt', 'a') as errorlog:
+            with open(config.ERRORLOG_DIR /'ErrorLogGffDownload.txt', 'a') as errorlog:
                     errorlog.write(f'File {filename} failed to be downloaded\n')
             errorlog.close()
             print(f'Error downloading {filename}')
@@ -73,7 +73,7 @@ def download_gff(url):
 
 if __name__ == '__main__':
 
-    links = obtain_gff_link_from_db('GenomesDb.sql')
+    links = obtain_gff_link_from_db(config.GENERAL_DB_DIR / 'GenomesDb.sql')
 
     for link in links:
         download_gff(link)

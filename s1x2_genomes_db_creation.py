@@ -1,11 +1,12 @@
 from peewee import *
-
+import config
 
 # Definition of the specific database
 def create_genomes_db(db_name = 'GenomesDb'):
 
     db_name = db_name + '.sql'
-    db = SqliteDatabase(db_name)
+    db_path = config.GENERAL_DB_DIR / db_name
+    db = SqliteDatabase(db_path)
 
     return db
 

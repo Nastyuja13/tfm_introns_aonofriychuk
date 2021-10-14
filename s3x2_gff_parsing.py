@@ -81,7 +81,7 @@ def parse_gff(gff_path):
     print('An error happened while parsing the GFF file:')
     print(err)
 
-    with open('ErrorLogGffParsing.txt','a') as errorlog:
+    with open(config.ERRORLOG_DIR /'ErrorLogGffParsing.txt','a') as errorlog:
       errorlog.write('# ERROR in \n')
       errorlog.write(str(gff_path))
       errorlog.write('\n' + err + '\n')

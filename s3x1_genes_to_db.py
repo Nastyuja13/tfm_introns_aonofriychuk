@@ -12,7 +12,7 @@ import s3x3_db_tables_creation as db_cr
 
 if __name__ == '__main__':
 
-    db_connect = sqlite3.connect('GenomesDb.sql') # 'GenomesDb.sql'
+    db_connect = sqlite3.connect(config.GENERAL_DB_DIR /'GenomesDb.sql') # 'GenomesDb.sql'
     cur = db_connect.cursor()
 
     cur.execute('SELECT gff_file FROM species')
@@ -30,7 +30,7 @@ if __name__ == '__main__':
 
             err = f'Error: {gff_file} is not available'
             print(err)
-            with open('ErrorLogGeneDb.txt','a') as errorlog:
+            with open(config.ERRORLOG_DIR /'ErrorLogGeneDb.txt','a') as errorlog:
                 errorlog.write(err + '\n')
             errorlog.close()
 
