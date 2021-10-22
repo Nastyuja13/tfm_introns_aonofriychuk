@@ -131,11 +131,11 @@ def _parse_ensembl_table(html, ensembl_site):
 
 def get_ensembl_species_info(ensembl_sites=None):
 
-    htmls = {'metazoa': config.ENSEMBL_METAZOA_HTML,
-             'fungi': config.ENSEMBL_FUNGI_HTML,
+    htmls = {'main': config.ENSEMBL_HTML,
+             'plant': config.ENSEMBL_PLANTS_HTML,
+             'metazoa': config.ENSEMBL_METAZOA_HTML,
              'protists': config.ENSEMBL_PROTISTS_HTML,
-             'main': config.ENSEMBL_HTML,
-             'plant': config.ENSEMBL_PLANTS_HTML
+             'fungi': config.ENSEMBL_FUNGI_HTML
              }
 
     if ensembl_sites is None:

@@ -61,7 +61,7 @@ def avg_gene_len(genes):
 
 	total_len = sum(total_genes)
 
-	avg_gene_len = total_len / len(genes.keys())
+	avg_gene_len = round(total_len / len(genes.keys()), 3)
 
 	return avg_gene_len
 
@@ -105,9 +105,7 @@ cur.execute('SELECT gene_id, start, end FROM genes')
 
 genes_lens = {gene[0]: {'start': gene[1], 'end': gene[2]} for gene in cur.fetchall()}
 
-cur.execute('SELECT gene_id FROM genes')
-
-genes = [gene[0] for gene in cur.fetchall()]
+genes = genes_lens.keys()
 
 print('Number of genes:' + str(len(genes)))
 print('Avg gene len:' + str(avg_gene_len(genes_lens)))
@@ -163,3 +161,121 @@ for gene in genes:
 	if i == 3:
 		db_connect.close()
 		break
+
+
+db_connect = sqlite3.connect(config.GENERAL_DB_DIR / 'xxGenomesDb.sql') 
+cur = db_connect.cursor()
+
+cur.execute('SELECT species, gff_file FROM species')
+
+gff3s = [{gff3[0]: gff3[1][:-8] + '.sql'} for gff3 in cur.fetchall()]
+
+db_connect.close()
+
+
+
+from peewee import *
+
+j = 0
+
+statss = []
+
+for gff in gff3s:
+
+	print(gff)
+
+	a = list(gff.keys())[0]
+
+	print(a)
+	print(type(a))
+
+	db_connect = sqlite3.connect(config.NEW_DB_DIR / gff[a]) 
+	cur = db_connect.cursor()
+
+	cur.execute('SELECT gene_id, start, end FROM genes')
+	genes_lens = {gene[0]: {'start': gene[1], 'end': gene[2]} for gene in cur.fetchall()}
+	genes = genes_lens.keys()
+	print('Number of genes:' + str(len(genes)))
+	print('Avg gene len:' + str(avg_gene_len(genes_lens)))
+
+	cur.execute('SELECT trans_id FROM transcripts')
+	ts = [t[0] for t in cur.fetchall()]
+	print('Number of transcripts:' + str(len(ts)))
+
+	cur.execute('SELECT exon_id FROM exons')
+	ex = [e[0] for e in cur.fetchall()]
+
+	print('Number of exons:' + str(len(ex)))
+
+	gene_info = {'species': a,
+	             'gene_num': len(genes),
+                 'trans_num': len(ts),
+                 'exon_num': len(ex),
+                 'avg_gene_len': avg_gene_len(genes_lens),
+                 'avg_trans_per_gene': avg_trans_per_gene(ts, genes),
+                 'avg_exon_per_trans': avg_exon_per_trans(ex, ts),
+                 'avg_exon_per_gene': avg_exon_per_gene(ex, genes)#,
+                 #'avg_exon_len_per_gene': BigIntegerField(),
+                 #'avg_exon_len_per_trans': BigIntegerField(),
+                 #'avg_intron_len_per_gene': BigIntegerField(),
+                 #'avg_intron_len_per_trans': BigIntegerField()
+                 }
+
+
+	statss.append(gene_info)
+
+	db_connect.close()
+	j = j + 1
+
+	if j == 5:
+		break
+
+###############################
+
+db = SqliteDatabase(config.GENERAL_DB_DIR / 'GenomesDb.sql')
+#db = SqliteDatabase(config.GENERAL_DB_DIR / 'GenomesStatsDb.sql')
+db.connect()
+
+class Species(Model):
+	name = CharField()
+	species = CharField() 
+	common_name = CharField() 
+	species_type = CharField()
+	gff_link = CharField()
+	gff_file = CharField()
+
+	class Meta:
+		database = db 
+		table_name = 'species'
+
+class Stats(Model):
+	species = ForeignKeyField(Species, backref='stats')
+	#species = CharField(primary_key = True)
+	#genome_length = BigIntegerField()
+	gene_num = BigIntegerField()
+	trans_num = BigIntegerField()
+	exon_num = BigIntegerField()
+	avg_gene_len = BigIntegerField()
+	avg_trans_per_gene = BigIntegerField()
+	avg_exon_per_trans = BigIntegerField()
+	avg_exon_per_gene = BigIntegerField()
+	#avg_exon_len_per_gene = BigIntegerField()
+	#avg_exon_len_per_trans = BigIntegerField()
+	#avg_intron_len_per_gene = BigIntegerField()
+	#avg_intron_len_per_trans = BigIntegerField()
+
+	class Meta:
+		database = db 
+		table_name = 'stats'
+
+db.bind([Species])
+
+db.create_tables([Stats])
+
+with db.atomic():
+
+    print('Inserting Species Stats Info into DB')
+    for batch in chunked(statss, 100):
+    	Stats.insert_many(batch).execute()
+
+db.close()
