@@ -25,6 +25,18 @@ elif USER == 'ao13':
     ERRORLOG_DIR = HOME_DIR / 'Desktop' / 'tfm_comav' / 'tfm_errorlog'
     ERRORLOG_DIR.mkdir(exist_ok=True)
 
+elif USER == 'anastasiya':
+    BASE_DIR = HOME_DIR / 'Desktop' / 'TFM' / 'tfm_mockup'
+    SOURCE_DATA_DIR = HOME_DIR / 'Desktop' / 'TFM' / 'tfm_mockup_data'
+    NEW_DOWNLOAD_DIR = SOURCE_DATA_DIR / 'gff3'
+    NEW_DOWNLOAD_DIR.mkdir(exist_ok=True)
+    NEW_DB_DIR = SOURCE_DATA_DIR / 'speciesDB'
+    NEW_DB_DIR.mkdir(exist_ok=True)
+    GENERAL_DB_DIR = SOURCE_DATA_DIR / 'genomesDB'
+    GENERAL_DB_DIR.mkdir(exist_ok=True)
+    ERRORLOG_DIR = HOME_DIR / 'Desktop' / 'TFM' / 'tfm_errorlog'
+    ERRORLOG_DIR.mkdir(exist_ok=True)
+
 
 ENSEMBL_PLANTS_HTML = SOURCE_DATA_DIR / 'ensembl_plants_genomes_table.html'
 ENSEMBL_HTML = SOURCE_DATA_DIR / 'ensembl_genomes_table.html'
