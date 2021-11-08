@@ -117,14 +117,18 @@ def _parse_ensembl_table(html, ensembl_site):
                         'species': species,
                         'common_name': common_name,
                         'species_type': ensembl_site,
-                        'gff_link': full_gff3_url,
-                        'gff_file': gff_file
+                        'release': int(gff_file.split('.')[-3]),
+                        'gff_name': gff_file[:-8],
+                        'gff_file': gff_file,
+                        'gff_link': full_gff3_url
                         #'gff_path': gff_path,
                         #'golden_path_len': golden_path_len,
                         #'id': id_
                         }
 
         speciess.append(species_info)
+
+    # CLEANING OF DUPLICATES IN speciess
 
     return speciess
 

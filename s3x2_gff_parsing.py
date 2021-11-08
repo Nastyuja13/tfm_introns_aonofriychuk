@@ -1,5 +1,37 @@
 import gzip
 
+# Selects the correct gene_id from a split by ':' in gene or transcript attributes
+def _select_id(attr_dict, id_key):
+
+  # Differentiate if the id is for a gene or for a transcirpt (parent gene)
+  #if 'gene_id' in atr_dict:
+    #id_key = 'gene_id'
+    #gene_id = atr_dict[id_key].split(':')[-1]
+  #elif 'transcript_id' in atr_dict:
+    #id_key = 'Parent'
+    #gene_id = atr_dict[id_key].split(':')[-1]
+
+  id_attr = attr_dict[id_key].split(':')
+
+  #print(attr_dict)
+
+  # Check needed as "Leishmania major" has gene IDs in this format: "ID=gene:LMJF_32_ncRNA2:ncRNA;"
+  # Check needed as "Plasmodium chabaudi" has gene IDs with "ID=gene:PCHAS_113132:tRNA:tRNA;" 
+  # or "gene:chab06_tRNA1:tRNA" or "ID=gene:chab5_18s:rRNA;" structure
+  # Check needed as "Prunus avium" has transcript IDs in this format: "ID=transcript:Pav_co3990083.1_g010.1.mk:mrna;"
+  # Check needed as "Plasmodium chabaudi" has transcript IDs with "ID=transcript:chab5_5.8s:rRNA-1;" format
+
+  if (len(id_attr) == 1) or (len(id_attr) == 2):
+    id_name = id_attr[-1]
+  elif (len(id_attr) == 3):
+    id_name = id_attr[-2] + ':' + id_attr[-1]
+  else:
+    id_name = id_attr[-3] + ':' + id_attr[-2] + ':' + id_attr[-1]
+
+  #print(id_name)
+  return id_name
+
+
 # Parsing of the file
 def parse_gff(gff_path):
 
@@ -29,7 +61,7 @@ def parse_gff(gff_path):
       # if a record is a gene  
       if 'gene_id' in attributes:
         
-        gene_id = attributes['gene_id'].split(':')[-1]
+        gene_id = _select_id(attributes, 'gene_id')
         biotype = attributes['biotype']
         description = attributes.get('description', '')
 
@@ -44,8 +76,8 @@ def parse_gff(gff_path):
       # if the record is a transcript  
       elif 'transcript_id' in attributes:
 
-        trns = attributes['transcript_id'].split(':')[-1]
-        gn = attributes['Parent'].split(':')[-1]
+        trns = _select_id(attributes, 'transcript_id')
+        gn = _select_id(attributes, 'Parent')
         biotype = attributes['biotype']
 
         transcript = {'trans_id': trns, 'start': start, 'end': end, 
@@ -58,8 +90,8 @@ def parse_gff(gff_path):
       # if the record is an exon 
       elif seqtype == 'exon':
 
-        exon_id = attributes['exon_id'].split(':')[-1]
-        trns = attributes['Parent'].split(':')[-1]
+        exon_id = _select_id(attributes, 'exon_id')
+        trns = _select_id(attributes, 'Parent')
         exon_len = abs(end-start)
 
         exon = {'exon_id': exon_id, 'start': start, 'end': end, 

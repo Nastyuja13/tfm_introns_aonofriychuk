@@ -55,7 +55,33 @@ if __name__ == '__main__':
             pass
 
         gene_dict = parsed_gff[0]
+        ### check if genes fail to be unique ###
+        #print(len(gene_dict))
+        #aaa = []
+        #for gn in gene_dict:
+            #a = gn['gene_id']
+            #if a in aaa:
+                #print(a)
+                #print(gn)
+            #aaa.append(a)
+
+        #print(str(len(set(aaa))))
+        #print(aaa[1:5])
+
         trans_dict = parsed_gff[1]
+        ### check if transcripts fail to be unique ###
+        #print('How many transcripts: ' + str(len(trans_dict)))
+
+        #aaa = []
+        #for tr in trans_dict:
+            #a = tr['trans_id']
+            #if a in aaa:
+                #print(tr)
+            #aaa.append(a)
+
+        #print(str(len(aaa)))
+        #print(aaa[1:5])
+
         exon_dict = parsed_gff[2]
 
         db_cr.gff_to_db(species_name, db, gene_dict, trans_dict, exon_dict)

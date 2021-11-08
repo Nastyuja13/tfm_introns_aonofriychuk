@@ -23,9 +23,11 @@ def species_info_to_db(speciess):
     species = CharField() 
     common_name = CharField() 
     species_type = CharField()
-    gff_link = CharField()
+    release = IntegerField()
+    gff_name = CharField(primary_key = True)
     gff_file = CharField()
-
+    gff_link = CharField()
+    
     class Meta:
       database = db 
       table_name = 'species'
