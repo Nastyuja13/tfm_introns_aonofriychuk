@@ -92,7 +92,7 @@ def parse_gff(gff_path):
 
         exon_id = _select_id(attributes, 'exon_id')
         trns = _select_id(attributes, 'Parent')
-        exon_len = abs(end-start)
+        exon_len = abs(end-start) + 1
 
         exon = {'exon_id': exon_id, 'start': start, 'end': end, 
                 'exon_length': exon_len, 'strand': strand, 'transcript': trns}

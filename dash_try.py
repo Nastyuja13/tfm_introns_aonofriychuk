@@ -6,18 +6,17 @@ from dash import dcc
 from dash import html
 import pandas as pd
 import sqlite3
+import plotly.express as px
 
 app = dash.Dash(__name__)
 
-db = sqlite3.connect(config.GENERAL_DB_DIR / 'xxGenomesDb.sql')
+db = sqlite3.connect(config.GENERAL_DB_DIR / 'GenomesDb.sql')
 
 df = pd.read_sql_query("SELECT species_type, count(DISTINCT species) FROM species GROUP BY species_type", db)
 
 print(df)
 
-db2 = sqlite3.connect(config.GENERAL_DB_DIR / 'GenomesStatsDb.sql')
-
-df2 = pd.read_sql_query("SELECT species, gene_num FROM stats", db2)
+df2 = pd.read_sql_query("SELECT gff_name_id, gene_num FROM stats", db)
 
 
 app.layout = html.Div(
@@ -47,7 +46,7 @@ app.layout = html.Div(
             figure={
             "data":[
                     {
-                    "x": df2["species"],
+                    "x": df2["gff_name_id"],
                     "y": df2["gene_num"],
                     "type": "bar",
                     }
