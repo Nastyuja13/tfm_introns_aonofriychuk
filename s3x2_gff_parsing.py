@@ -13,12 +13,10 @@ def _select_id(attr_dict, id_key):
 
   id_attr = attr_dict[id_key].split(':')
 
-  #print(attr_dict)
-
   # Check needed as "Leishmania major" has gene IDs in this format: "ID=gene:LMJF_32_ncRNA2:ncRNA;"
   # Check needed as "Plasmodium chabaudi" has gene IDs with "ID=gene:PCHAS_113132:tRNA:tRNA;" 
   # or "gene:chab06_tRNA1:tRNA" or "ID=gene:chab5_18s:rRNA;" structure
-  # Check needed as "Prunus avium" has transcript IDs in this format: "ID=transcript:Pav_co3990083.1_g010.1.mk:mrna;"
+  # Check needed as "Prunus avium" has transcript IDs in this format: " 'ID': 'transcript:Pav_sc0000009.1_g1310.1.mk:mrna' "
   # Check needed as "Plasmodium chabaudi" has transcript IDs with "ID=transcript:chab5_5.8s:rRNA-1;" format
 
   if (len(id_attr) == 1) or (len(id_attr) == 2):
@@ -39,6 +37,8 @@ def parse_gff(gff_path):
   trans_dict = []
   exon_dict = []
 
+  dups = []
+
   try:
     #for line in open(gff_path, 'rt'):
     for line in gzip.open(gff_path, 'rt'):
@@ -57,11 +57,15 @@ def parse_gff(gff_path):
       strand = fields[6]
       phase = fields[7]
       attributes = dict([attribute.split('=') for attribute in fields[-1].strip('\n').split(';')])
+
        
       # if a record is a gene  
       if 'gene_id' in attributes:
-        
-        gene_id = _select_id(attributes, 'gene_id')
+
+        if 'Leishmania_major' not in str(gff_path):
+          gene_id = _select_id(attributes, 'gene_id')
+        else:
+          gene_id = _select_id(attributes, 'ID')
         biotype = attributes['biotype']
         description = attributes.get('description', '')
 
@@ -71,12 +75,23 @@ def parse_gff(gff_path):
 
         gene_dict.append(gene)
 
+        # if gene_id not in dups:
+        #   dups.append(gene_id)
+        # else:
+        #   print(gene_id)
+        #   print(attributes)
+        #print('A')
+        #print(gene)
+
         continue
   
       # if the record is a transcript  
       elif 'transcript_id' in attributes:
 
-        trns = _select_id(attributes, 'transcript_id')
+        if 'Prunus_avium' not in str(gff_path) and 'Quercus_lobata' not in str(gff_path):
+          trns = _select_id(attributes, 'transcript_id')
+        else:
+          trns = _select_id(attributes, 'ID')
         gn = _select_id(attributes, 'Parent')
         biotype = attributes['biotype']
 
@@ -84,6 +99,10 @@ def parse_gff(gff_path):
                       'strand': strand, 'biotype': biotype, 'gene': gn}
 
         trans_dict.append(transcript)
+
+        #print('B')
+        #print(attributes)
+        #print(transcript)
 
         continue
 
@@ -98,6 +117,9 @@ def parse_gff(gff_path):
                 'exon_length': exon_len, 'strand': strand, 'transcript': trns}
 
         exon_dict.append(exon)
+
+        #print('C')
+        #print(exon)
 
         continue
 

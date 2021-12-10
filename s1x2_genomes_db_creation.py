@@ -24,6 +24,7 @@ def species_info_to_db(speciess):
     common_name = CharField() 
     species_type = CharField()
     release = IntegerField()
+    genome_length = IntegerField()
     gff_name = CharField(primary_key = True)
     gff_file = CharField()
     gff_link = CharField()
@@ -32,28 +33,8 @@ def species_info_to_db(speciess):
       database = db 
       table_name = 'species'
 
-  #class Stats(Model):
-    #species = ForeignKeyField(Species, backref='stats', primary_key = True)
-    #gene_num = BigIntegerField()
-    #trans_num = BigIntegerField()
-    #exon_num = BigIntegerField()
-    #avg_gene_len = BigIntegerField()
-    #avg_trans_per_gene = BigIntegerField()
-    #avg_exon_per_trans = BigIntegerField()
-    #avg_exon_per_gene = BigIntegerField()
-    #avg_exon_len_per_gene = BigIntegerField()
-    #avg_exon_len_per_trans = BigIntegerField()
-    #avg_intron_len_per_gene = BigIntegerField()
-    #avg_intron_len_per_trans = BigIntegerField()
-    
-    #class Meta:
-      #database = db 
-      #table_name = 'stats'
-
-
   # Connection to the database & table creation
   db.connect()
-  #db.create_tables([Species, Stats])
   db.create_tables([Species])
 
   # Fill the database tables as atomic operations

@@ -4,6 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 
 import s1x2_genomes_db_creation as genome_db
+import s4x2_genome_stat_funcs as gs
 
 
 def get_full_genome_gff3_url(ensembl_response_html, url, spc):
@@ -93,42 +94,26 @@ def _parse_ensembl_table(html, ensembl_site):
                 errorlog.write(err + '\n')
             continue
 
-        #assembly_info_url = tds[1].find_all('a')[-1].attrs['href']
-        #assembly_info_url += 'Info/Annotation/#assembly'
-
-        #try:
-            #golden_path_len = _get_assembly_golden_path_len(assembly_info_url, ensembl_release)
-        #except RuntimeError:
-            #golden_path_len = None
-
-        #gff_path = get_and_store_web_file(full_gff3_url, ignore_date=True,
-                                          #store_dir=gff_cache_dir)
         
         species = ' '.join(species_name.split()[:2]).replace('[', '').replace(']', '')
 
-        #if '[' in species:
-            #raise RuntimeError(f'{species}')
-
-        #id_ = ensembl_site + '_' + gff_path.name.split('.gff')[0].replace('.', '_').lower()
-
         gff_file = full_gff3_url.split('/')[-1]
+        gff_name = gff_file[:-8]
+
+        genome_length = gs.get_golden_path_len(gff_name, ensembl_site)
 
         species_info = {'name': species_name,
                         'species': species,
                         'common_name': common_name,
                         'species_type': ensembl_site,
                         'release': int(gff_file.split('.')[-3]),
-                        'gff_name': gff_file[:-8],
+                        'genome_length': genome_length,
+                        'gff_name': gff_name,
                         'gff_file': gff_file,
                         'gff_link': full_gff3_url
-                        #'gff_path': gff_path,
-                        #'golden_path_len': golden_path_len,
-                        #'id': id_
                         }
 
         speciess.append(species_info)
-
-    # CLEANING OF DUPLICATES IN speciess
 
     return speciess
 
@@ -155,7 +140,49 @@ def get_ensembl_species_info(ensembl_sites=None):
     
     return species_info
 
+def _remove_duplicates(speciess):
+
+    filtered_spc = []
+
+    existent_spc = []
+
+    # Concrete subspecies to save
+    subspc_to_keep = ['Duck', 'Mallard', 'Mexican tetra', 
+                      'Dingo', 'Dog', 'Goat', 'Common carp', 'Mouse', 'Sheep', 'Pig']
+
+    # Concrete species to exclude as they do not have introns (fungi and protists)
+    # and 'Hordeum vulgare', a plant which has exons of the same gene in different strands
+
+    spc_to_exclude = ['Hordeum vulgare', # plants
+                      'Angomonas deanei', 'Leishmania infantum', 'Leptomonas pyrrhocoris', # protists
+                      'Leptomonas seymouri', 'Perkinsela sp.', 'Phytomonas sp.', 'Strigomonas culicis', 
+                      'Tritrichomonas foetus', 'Trypanosoma conorhini', 'Trypanosoma cruzi', 
+                      'Trypanosoma rangeli', 'Trypanosoma theileri',
+                      'Amphiamblys sp.', 'Anncaliia algerae', 'Enterocytozoon bieneusi', # fungi
+                      'Enterocytozoon hepatopenaei', 'Enterospora canceri', 'Hepatospora eriocheir',
+                      'Nematocida displodere', 'Nematocida sp.', 'Pseudoloma neurophilia', 
+                      'Saccharomyces arboricola', 'Saccharomyces kudriavzevii', 'Spraguea lophii', 
+                      'Trachipleistophora hominis', 'Vittaforma corneae']
+
+    for species in speciess:
+
+        if species['species'] in spc_to_exclude:
+            pass
+        elif species['species'] not in existent_spc:
+            existent_spc.append(species['species'])
+            filtered_spc.append(species)
+        elif species['common_name'] in subspc_to_keep:
+            filtered_spc.append(species)
+        else:
+            pass
+
+    return filtered_spc
+
+
 if __name__ == '__main__':
 
     speciess = get_ensembl_species_info()
+    print(len(speciess))
+    speciess = _remove_duplicates(speciess)
+    print(len(speciess))
     genome_db.species_info_to_db(speciess)

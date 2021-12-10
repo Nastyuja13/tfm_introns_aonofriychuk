@@ -9,7 +9,9 @@ def get_classification(species_name):
         taxid = list(ncbi.get_name_translator([species_name]).values())[0][0]
     except IndexError:
         msg = f'Something went wrong with taxonomy for species: {species_name}'
+        print(msg)
         raise RuntimeError(msg)
+
     lineage = ncbi.get_lineage(taxid)
     lineage_names = ncbi.get_taxid_translator(lineage)
 
@@ -24,7 +26,7 @@ def get_classification(species_name):
 
 if __name__ == '__main__':
 
-    db = SqliteDatabase(config.GENERAL_DB_DIR / 'GenomesDb2.sql') 
+    db = SqliteDatabase(config.GENERAL_DB_DIR / 'GenomesDb.sql') 
     db.connect()
 
     class Species(Model):
@@ -33,6 +35,7 @@ if __name__ == '__main__':
         common_name = CharField() 
         species_type = CharField()
         release = IntegerField()
+        genome_length = BigIntegerField()
         gff_name = CharField(primary_key = True)
         gff_link = CharField()
         gff_file = CharField()
@@ -43,25 +46,50 @@ if __name__ == '__main__':
 
     class Stats(Model):
         gff_name = ForeignKeyField(Species, backref='stats', primary_key = True)
-        #species = CharField(primary_key = True)
-        genome_length = BigIntegerField()
         gene_num = BigIntegerField()
         trans_num = BigIntegerField()
         exon_num = BigIntegerField()
-        avg_gene_len = BigIntegerField()
-        avg_trans_per_gene = BigIntegerField()
-        avg_exon_per_trans = BigIntegerField()
-        avg_exon_per_gene = BigIntegerField()
-        #avg_exon_len_per_gene = BigIntegerField()
-        #avg_exon_len_per_trans = BigIntegerField()
-        #avg_intron_len_per_gene = BigIntegerField()
-        #avg_intron_len_per_trans = BigIntegerField()
+        gene_dens = DecimalField()
+        intron_gene_dens = DecimalField()
+        avg_gene_len = DecimalField()
+        avg_intron_gene_len = DecimalField()
+        avg_trans_per_gene = DecimalField()
+        avg_exon_per_trans = DecimalField()
+        avg_exon_per_gene = DecimalField()
+        avg_intron_num_per_gene = DecimalField()
+        avg_intron_num_per_gene_with_introns = DecimalField()
+        avg_intron_len = DecimalField()
+        avg_first_intron_len = DecimalField()
+        avg_total_intron_len = DecimalField()
 
         class Meta:
             database = db 
             table_name = 'stats'
 
+    class Stats_Prot(Model):
+        gff_name = ForeignKeyField(Species, backref='stats_prot', primary_key = True)
+        gene_num = BigIntegerField()
+        trans_num = BigIntegerField()
+        exon_num = BigIntegerField()
+        gene_dens = DecimalField()
+        intron_gene_dens = DecimalField()
+        avg_gene_len = DecimalField()
+        avg_intron_gene_len = DecimalField()
+        avg_trans_per_gene = DecimalField()
+        avg_exon_per_trans = DecimalField()
+        avg_exon_per_gene = DecimalField()
+        avg_intron_num_per_gene = DecimalField()
+        avg_intron_num_per_gene_with_introns = DecimalField()
+        avg_intron_len = DecimalField()
+        avg_first_intron_len = DecimalField()
+        avg_total_intron_len = DecimalField()
+
+        class Meta:
+            database = db 
+            table_name = 'stats_prot'
+
     class Taxonomy(Model):
+        gff_name = ForeignKeyField(Species, backref='taxonomy', primary_key = True)
         organism_type = CharField(default = '') 
         superkingdom = CharField(default = '')
         clade = CharField(default = '')
@@ -78,51 +106,100 @@ if __name__ == '__main__':
         order_ = CharField(default = '')
         infraorder = CharField(default = '')
         suborder = CharField(default = '')
+        parvorder = CharField(default = '')
         tribe = CharField(default = '')
         superfamily = CharField(default = '')
         family = CharField(default = '')
         subfamily =  CharField(default = '')
         genus = CharField(default = '')
-        species = ForeignKeyField(Species, backref='species')
+        subgenus = CharField(default = '')
+        species = CharField(default = '')
 
         class Meta:
             database = db 
             table_name = 'taxonomy'
 
-    db.bind([Species, Stats])
+    class Graphs(Model):
+        gff_name = ForeignKeyField(Species, backref='graphs', primary_key = True)
+        box_1 = TextField()
+        dist_1 = TextField()
+        box_all = TextField()
+        dist_all = TextField()
+        box_tot = TextField()
+        dist_tot = TextField()
+        box_num = TextField()
+        dist_num = TextField()
+
+        class Meta:
+            database = db 
+            table_name = 'graphs'
+
+    class Graphs_Prot(Model):
+        gff_name = ForeignKeyField(Species, backref='graphs_prot', primary_key = True)
+        box_1 = TextField()
+        dist_1 = TextField()
+        box_all = TextField()
+        dist_all = TextField()
+        box_tot = TextField()
+        dist_tot = TextField()
+        box_num = TextField()
+        dist_num = TextField()
+
+        class Meta:
+            database = db 
+            table_name = 'graphs_prot'
+
+    db.bind([Species, Stats, Stats_Prot, Graphs, Graphs_Prot])
 
     db.create_tables([Taxonomy])
 
-    cur = db.execute_sql('SELECT gff_name_id FROM stats')
+    cur = db.execute_sql('SELECT gff_name, name FROM species')
+    #cur = db.execute_sql('SELECT s.gff_name_id, spc.name FROM stats s JOIN species spc ON (s.gff_name_id = spc.gff_name)')
 
-    species0 = [gff_name[0].split('.')[0] for gff_name in cur.fetchall()]
-    species = []
+    species = [{'gff_name': species[0], 'name': species[1]} for species in cur.fetchall()]
 
-    for s in species0:
-        if s[0] == '_':
-            s = s[1:]
-
-        s = s.split('_')[0] + ' ' + s.split('_')[1]
-        s = s[0].upper() + s[1:]
-
-        species.append(s)
-
-    print(species)
     taxa = []
 
-    for spc in species:
+    for element in species:
 
-        a = get_classification(spc)
-        a['organism_type'] = a['no rank']
-        del a['no rank']
-        a['class_'] = a['class']
-        del a['class']
-        a['order_'] = a['order']
-        del a['order']
+        spc = element['gff_name'].split('.')[0]
+
+        if spc[0] == '_':
+            spc = spc[1:]
+
+        spc = spc.split('_')[0] + ' ' + spc.split('_')[1]
+        spc = spc[0].upper() + spc[1:]
+
+        try:
+            a = get_classification(spc)
+        except RuntimeError:
+            continue
+        
+        try:
+            a['organism_type'] = a['no rank']
+            del a['no rank']
+        except KeyError:
+            pass
+
+        try:
+            a['class_'] = a['class']
+            del a['class']
+        except KeyError:
+            pass
+
+        try:
+            a['order_'] = a['order']
+            del a['order']
+        except KeyError:
+            pass
+
+        a['gff_name_id'] = element['gff_name']
 
         taxa.append(a)
 
-    print(taxa)
+    # for smth in taxa:
+    #     print(smth)
+    #     Taxonomy.insert(smth).execute()
 
     Taxonomy.insert_many(taxa).execute()
 
