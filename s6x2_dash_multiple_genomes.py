@@ -489,7 +489,8 @@ def represent_graphs(genomes, taxon, taxon_to_color, gene_type, gene_int_type, i
 			fig0.data[0].update(marker= {'color': colors[tx]}, name = fig0.data[0].name + ', ' + tx)
 			fig.add_trace(fig0.data[0])
 
-		fig.update_layout(yaxis=dict(range=[-1500, 12000]), yaxis_title= stat_features[introns] + " (bp)")
+		# yaxis=dict(range=[-1500, 12000]),
+		fig.update_layout( yaxis_title= stat_features[introns] + " (bp)")
 
 	elif graph_type == 'distribution':
 		graph = distribution
@@ -540,4 +541,4 @@ def represent_graphs(genomes, taxon, taxon_to_color, gene_type, gene_int_type, i
 
 if __name__ == "__main__":
 
-	app.run_server(debug=True)
+	app.run_server(host='0.0.0.0', debug=True, port=8050)

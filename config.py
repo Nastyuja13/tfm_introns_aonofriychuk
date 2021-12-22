@@ -11,27 +11,26 @@ if USER == 'jose':
 
 elif USER == 'anastasiya':
     BASE_DIR = HOME_DIR / 'Desktop' / 'TFM' / 'tfm_intron_scripts'
-    SOURCE_DATA_DIR = HOME_DIR / 'Desktop' / 'TFM' / 'tfm_intron_data'
-    NEW_DOWNLOAD_DIR = SOURCE_DATA_DIR / 'gff3'
+    SOURCE_DATA_DIR = HOME_DIR / 'Desktop' / 'TFM' / 'tfm_intron_data' / 'ensembl_files'
+    SOURCE_DATA_DIR2 = HOME_DIR / 'Desktop' / 'TFM' / 'tfm_intron_data'
+    NEW_DOWNLOAD_DIR = SOURCE_DATA_DIR2 / 'gff3'
     NEW_DOWNLOAD_DIR.mkdir(exist_ok=True)
-    NEW_DB_DIR = SOURCE_DATA_DIR / 'speciesDB'
+    NEW_DB_DIR = SOURCE_DATA_DIR2 / 'speciesDB'
     NEW_DB_DIR.mkdir(exist_ok=True)
-    GENERAL_DB_DIR = SOURCE_DATA_DIR / 'genomesDB'
+    GENERAL_DB_DIR = SOURCE_DATA_DIR2 / 'genomesDB'
     GENERAL_DB_DIR.mkdir(exist_ok=True)
     ERRORLOG_DIR = HOME_DIR / 'Desktop' / 'TFM' / 'tfm_errorlog'
     ERRORLOG_DIR.mkdir(exist_ok=True)
 
 elif USER == 'intron_docker':
-    BASE_DIR = HOME_DIR / 'TFM_aonofriychuk' / 'tfm_scripts'
-    SOURCE_DATA_DIR = HOME_DIR / 'TFM_aonofriychuk' / 'tfm_data'
-    NEW_DOWNLOAD_DIR = SOURCE_DATA_DIR / 'gff3'
-    NEW_DOWNLOAD_DIR.mkdir(exist_ok=True)
-    NEW_DB_DIR = SOURCE_DATA_DIR / 'speciesDB'
-    NEW_DB_DIR.mkdir(exist_ok=True)
-    GENERAL_DB_DIR = SOURCE_DATA_DIR / 'genomesDB'
-    GENERAL_DB_DIR.mkdir(exist_ok=True)
-    ERRORLOG_DIR = HOME_DIR / 'TFM_aonofriychuk' / 'tfm_errorlog'
-    ERRORLOG_DIR.mkdir(exist_ok=True)
+    #HOME_DIR = Path('TFM_aonofriychuk') 
+    BASE_DIR = Path('tfm_scripts')
+    SOURCE_DATA_DIR2 = Path('tfm_data')
+    SOURCE_DATA_DIR = SOURCE_DATA_DIR2 / 'ensembl_files'
+    NEW_DOWNLOAD_DIR = SOURCE_DATA_DIR2 / 'gff3'
+    NEW_DB_DIR = SOURCE_DATA_DIR2 / 'speciesDB'
+    GENERAL_DB_DIR = SOURCE_DATA_DIR2 / 'genomesDB'
+    ERRORLOG_DIR = Path('tfm_errorlog')
 
 
 ENSEMBL_PLANTS_HTML = SOURCE_DATA_DIR / 'ensembl_plants_genomes_table.html'
