@@ -32,6 +32,8 @@ def create_stat_graph_tables(genomes_db, stats, stats_prot, graphs, graphs_prot)
 		intron_gene_dens = DecimalField()
 		avg_gene_len = DecimalField()
 		avg_intron_gene_len = DecimalField()
+		avg_exon_len = DecimalField()
+		avg_exon_len_in_int_genes = DecimalField()
 		avg_trans_per_gene = DecimalField()
 		avg_exon_per_trans = DecimalField()
 		avg_exon_per_gene = DecimalField()
@@ -56,6 +58,8 @@ def create_stat_graph_tables(genomes_db, stats, stats_prot, graphs, graphs_prot)
 		intron_gene_dens = DecimalField()
 		avg_gene_len = DecimalField()
 		avg_intron_gene_len = DecimalField()
+		avg_exon_len = DecimalField()
+		avg_exon_len_in_int_genes = DecimalField()
 		avg_trans_per_gene = DecimalField()
 		avg_exon_per_trans = DecimalField()
 		avg_exon_per_gene = DecimalField()
@@ -109,12 +113,24 @@ def create_stat_graph_tables(genomes_db, stats, stats_prot, graphs, graphs_prot)
 		print('Inserting Species Stats Info into DB')
 		for batch in chunked(stats, 100):
 			Stats.insert_many(batch).execute()
+
+	with db.atomic():
+
+		print('Inserting Species Prot Stats Info into DB')
 		for batch in chunked(stats_prot, 100):
 			Stats_Prot.insert_many(batch).execute()
+
+	with db.atomic():
 		print('Inserting Species Graphs Info into DB')
 		for batch in chunked(graphs, 100):
 			Graphs.insert_many(batch).execute()
+
+	with db.atomic():
+
+		print('Inserting Species Prot Graphs Info into DB')
 		for batch in chunked(graphs_prot, 100):
 			Graphs_Prot.insert_many(batch).execute()
+
+	print('Done')
 
 	db.close()

@@ -1,8 +1,6 @@
 import config
-
 import requests
 from bs4 import BeautifulSoup
-
 import s1x2_genomes_db_creation as genome_db
 import s4x2_genome_stat_funcs as gs
 
@@ -27,6 +25,8 @@ def get_full_genome_gff3_url(ensembl_response_html, url, spc):
     if len(links) == 0:
         err = f'Error obtaining the {spc} full GFF link'
         print(err)
+        print(ensembl_release)
+        print(soup.text)
         with open(config.ERRORLOG_DIR / 'ErrorLogEnsemblTables.txt','a') as errorlog:
             errorlog.write(err + '\n')
         print(RuntimeError('No links available'))
@@ -43,12 +43,6 @@ def _parse_ensembl_table(html, ensembl_site):
     soup = BeautifulSoup(html, 'html.parser')
     # Obtain all tables in the html
     tables = soup.find_all('tbody')
-
-    # Create directory for the Ensembl species type we're downloading
-    ##gff_cache_dir = config.GFF_CACHE_DIR / ensembl_site
-    ##gff_cache_dir.mkdir(exist_ok=True)
-    ##dbs_cache_dir = config.DBS_CACHE_DIR / ensembl_site
-    ##dbs_cache_dir.mkdir(exist_ok=True)
 
     # List that will contain all species general info and url to gff file
     speciess = []
@@ -140,15 +134,11 @@ def get_ensembl_species_info(ensembl_sites=None):
     
     return species_info
 
+
 def _remove_duplicates(speciess):
 
     filtered_spc = []
-
     existent_spc = []
-
-    # Concrete subspecies to save
-    subspc_to_keep = ['Duck', 'Mallard', 'Mexican tetra', 
-                      'Dingo', 'Dog', 'Goat', 'Common carp', 'Mouse', 'Sheep', 'Pig']
 
     # Concrete species to exclude as they do not have introns (fungi and protists)
     # and 'Hordeum vulgare', a plant which has exons of the same gene in different strands
@@ -162,7 +152,8 @@ def _remove_duplicates(speciess):
                       'Enterocytozoon hepatopenaei', 'Enterospora canceri', 'Hepatospora eriocheir',
                       'Nematocida displodere', 'Nematocida sp.', 'Pseudoloma neurophilia', 
                       'Saccharomyces arboricola', 'Saccharomyces kudriavzevii', 'Spraguea lophii', 
-                      'Trachipleistophora hominis', 'Vittaforma corneae']
+                      'Trachipleistophora hominis', 'Vittaforma corneae',
+                      'Saccharomycetaceae sp. \'Ashbya aceri\' (GCA_000412225)'] # error with taxonomy
 
     for species in speciess:
 
@@ -170,8 +161,6 @@ def _remove_duplicates(speciess):
             pass
         elif species['species'] not in existent_spc:
             existent_spc.append(species['species'])
-            filtered_spc.append(species)
-        elif species['common_name'] in subspc_to_keep:
             filtered_spc.append(species)
         else:
             pass

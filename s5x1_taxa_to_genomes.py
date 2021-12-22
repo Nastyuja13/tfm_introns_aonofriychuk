@@ -3,14 +3,35 @@ from peewee import *
 from ete3 import NCBITaxa
 
 
-def get_classification(species_name):
+def get_classification(species_name, ext_name, whole_name, other_name = ''):
     ncbi = NCBITaxa()
+
+    correct_names = {'Pythium iwayamai': 'Globisporangium iwayamae',
+    'Arthrobotrys oligospora ATCC 24927 (GCA_000225545)': 'Orbilia oligospora ATCC 24927',
+    'Aspergillus nomius NRRL 13137 (GCA_001204775)': 'Aspergillus nomiae NRRL 13137',
+    'Emergomyces pasteuriana Ep9510 str. UAMH 9510 (GCA_001883825)': 'Emergomyces pasteurianus Ep9510',
+    'Emmonsia sp. CAC-2015a str. CBS 136260 (GCA_001660665)': 'Emergomyces africanus',
+    'Protomyces lactucaedebilis str. 12-1054 (GCA_002105105)': 'Protomyces lactucae-debilis',
+    'Saccharomyces sp. \'boulardii\' str. biocodex (GCA_001298375)': 'Saccharomyces boulardii',
+    'Ustilaginomycotina sp. SA 807 (GCA_003144235)': 'Violaceomyces palustris',
+    '[Candida] haemulonis str. B11899 (GCA_002926055)': 'Candida haemuloni',
+    '[Candida] pseudohaemulonis str. B12108 (GCA_003013735)': '[Candida] pseudohaemulonii'}
+
+    if whole_name in correct_names.keys():
+        species_name = correct_names[whole_name]
+
     try:
         taxid = list(ncbi.get_name_translator([species_name]).values())[0][0]
     except IndexError:
-        msg = f'Something went wrong with taxonomy for species: {species_name}'
-        print(msg)
-        raise RuntimeError(msg)
+        try:
+            taxid = list(ncbi.get_name_translator([ext_name]).values())[0][0]
+        except IndexError:
+            try:
+                taxid = list(ncbi.get_name_translator([other_name]).values())[0][0]
+            except IndexError:
+                msg = f'Something went wrong with taxonomy for species: {species_name}, {ext_name}, {other_name}'
+                print(msg)
+                raise RuntimeError(msg)
 
     lineage = ncbi.get_lineage(taxid)
     lineage_names = ncbi.get_taxid_translator(lineage)
@@ -47,12 +68,15 @@ if __name__ == '__main__':
     class Stats(Model):
         gff_name = ForeignKeyField(Species, backref='stats', primary_key = True)
         gene_num = BigIntegerField()
+        genes_with_introns_num = BigIntegerField()
         trans_num = BigIntegerField()
         exon_num = BigIntegerField()
         gene_dens = DecimalField()
         intron_gene_dens = DecimalField()
         avg_gene_len = DecimalField()
         avg_intron_gene_len = DecimalField()
+        avg_exon_len = DecimalField()
+        avg_exon_len_in_int_genes = DecimalField()
         avg_trans_per_gene = DecimalField()
         avg_exon_per_trans = DecimalField()
         avg_exon_per_gene = DecimalField()
@@ -69,12 +93,15 @@ if __name__ == '__main__':
     class Stats_Prot(Model):
         gff_name = ForeignKeyField(Species, backref='stats_prot', primary_key = True)
         gene_num = BigIntegerField()
+        genes_with_introns_num = BigIntegerField()
         trans_num = BigIntegerField()
         exon_num = BigIntegerField()
         gene_dens = DecimalField()
         intron_gene_dens = DecimalField()
         avg_gene_len = DecimalField()
         avg_intron_gene_len = DecimalField()
+        avg_exon_len = DecimalField()
+        avg_exon_len_in_int_genes = DecimalField()
         avg_trans_per_gene = DecimalField()
         avg_exon_per_trans = DecimalField()
         avg_exon_per_gene = DecimalField()
@@ -90,30 +117,32 @@ if __name__ == '__main__':
 
     class Taxonomy(Model):
         gff_name = ForeignKeyField(Species, backref='taxonomy', primary_key = True)
-        organism_type = CharField(default = '') 
-        superkingdom = CharField(default = '')
-        clade = CharField(default = '')
-        kingdom = CharField(default = '')
-        subkingdom =  CharField(default = '')
-        phylum = CharField(default = '')
-        subphylum = CharField(default = '')
-        superclass = CharField(default = '')
-        class_ = CharField(default = '')
-        subclass = CharField(default = '')
-        infraclass = CharField(default = '')
-        cohort = CharField(default = '')
-        superorder = CharField(default = '')
-        order_ = CharField(default = '')
-        infraorder = CharField(default = '')
-        suborder = CharField(default = '')
-        parvorder = CharField(default = '')
-        tribe = CharField(default = '')
-        superfamily = CharField(default = '')
-        family = CharField(default = '')
-        subfamily =  CharField(default = '')
-        genus = CharField(default = '')
-        subgenus = CharField(default = '')
-        species = CharField(default = '')
+        organism_type = CharField(default = 'Unclassified') 
+        superkingdom = CharField(default = 'Unclassified')
+        clade = CharField(default = 'Unclassified')
+        kingdom = CharField(default = 'Unclassified')
+        subkingdom =  CharField(default = 'Unclassified')
+        phylum = CharField(default = 'Unclassified')
+        subphylum = CharField(default = 'Unclassified')
+        superclass = CharField(default = 'Unclassified')
+        class_ = CharField(default = 'Unclassified')
+        subclass = CharField(default = 'Unclassified')
+        infraclass = CharField(default = 'Unclassified')
+        cohort = CharField(default = 'Unclassified')
+        superorder = CharField(default = 'Unclassified')
+        order_ = CharField(default = 'Unclassified')
+        infraorder = CharField(default = 'Unclassified')
+        suborder = CharField(default = 'Unclassified')
+        parvorder = CharField(default = 'Unclassified')
+        tribe = CharField(default = 'Unclassified')
+        subtribe = CharField(default = 'Unclassified')
+        section = CharField(default = 'Unclassified')
+        superfamily = CharField(default = 'Unclassified')
+        family = CharField(default = 'Unclassified')
+        subfamily =  CharField(default = 'Unclassified')
+        genus = CharField(default = 'Unclassified')
+        subgenus = CharField(default = 'Unclassified')
+        species = CharField(default = 'Unclassified')
 
         class Meta:
             database = db 
@@ -170,8 +199,31 @@ if __name__ == '__main__':
         spc = spc.split('_')[0] + ' ' + spc.split('_')[1]
         spc = spc[0].upper() + spc[1:]
 
+        sp = element['name']
+        sp_alt = ''
+
+        if sp[0:9] == '[Candida]':
+            sp = 'Candida' + sp[9:]
+
+        sp_fragm = sp.split(' ')
+
+        if sp_fragm[-1][0:4] == '(GCA':
+            sp_fragm = sp_fragm[:-1]
+            sp = sp.split(' (GCA')[0]
+
+        if (len(sp_fragm) == 2) or (len(sp_fragm) == 3):
+            pass
+        elif len(sp_fragm) > 2 and sp_fragm[1] == 'sp.':
+            sp = sp_fragm[0] + ' ' + sp_fragm[1] + ' ' + sp_fragm[2]
+            if len(sp_fragm) > 3:
+                sp_alt = sp_fragm[0] + ' ' + sp_fragm[1] + ' ' + sp_fragm[2] + ' ' + sp_fragm[3]
+        elif len(sp_fragm) > 3 and sp_fragm[2] == 'str.':
+            sp = sp_fragm[0] + ' ' + sp_fragm[1] + ' ' + sp_fragm[2] + ' ' + sp_fragm[3]
+        elif len(sp_fragm) > 3:
+            sp = sp_fragm[0] + ' ' + sp_fragm[1] + ' ' + sp_fragm[2] + ' ' + sp_fragm[3]
+
         try:
-            a = get_classification(spc)
+            a = get_classification(spc, sp, element['name'], sp_alt)
         except RuntimeError:
             continue
         
@@ -197,16 +249,12 @@ if __name__ == '__main__':
 
         taxa.append(a)
 
-    # for smth in taxa:
-    #     print(smth)
-    #     Taxonomy.insert(smth).execute()
+    #Taxonomy.insert_many(taxa).execute()
 
-    Taxonomy.insert_many(taxa).execute()
+    with db.atomic():
 
-    # with db.atomic():
-
-    #     print('Inserting Species Stats Info into DB')
-    #     for batch in chunked(taxa, 100):
-    #         Taxonomy.insert_many(batch).execute()
+        print('Inserting Species Stats Info into DB')
+        for batch in chunked(taxa, 100):
+            Taxonomy.insert_many(batch).execute()
 
     db.close()
