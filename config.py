@@ -10,8 +10,8 @@ if USER == 'jose':
     SOURCE_DATA_DIR = BASE_DIR / 'source_data'
 
 elif USER == 'anastasiya':
-    BASE_DIR = HOME_DIR / 'Desktop' / 'TFM' / 'tfm_mockup'
-    SOURCE_DATA_DIR = HOME_DIR / 'Desktop' / 'TFM' / 'tfm_mockup_data'
+    BASE_DIR = HOME_DIR / 'Desktop' / 'TFM' / 'tfm_intron_scripts'
+    SOURCE_DATA_DIR = HOME_DIR / 'Desktop' / 'TFM' / 'tfm_intron_data'
     NEW_DOWNLOAD_DIR = SOURCE_DATA_DIR / 'gff3'
     NEW_DOWNLOAD_DIR.mkdir(exist_ok=True)
     NEW_DB_DIR = SOURCE_DATA_DIR / 'speciesDB'
