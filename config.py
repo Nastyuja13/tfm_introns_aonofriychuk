@@ -9,22 +9,6 @@ if USER == 'jose':
     BASE_DIR = HOME_DIR / 'magnet' / 'analyses' / 'intron_size'
     SOURCE_DATA_DIR = BASE_DIR / 'source_data'
 
-elif USER == 'Nastyuja':
-    BASE_DIR = HOME_DIR / 'Documents' / 'GitHub' / 'intron_size'
-    SOURCE_DATA_DIR = HOME_DIR / 'Desktop' / 'Intron Size'
-
-elif USER == 'ao13':
-    BASE_DIR = HOME_DIR / 'Desktop' / 'tfm_comav' / 'tfm_mockup'
-    SOURCE_DATA_DIR = HOME_DIR / 'Desktop' / 'tfm_comav' / 'tfm_mockup_data'
-    NEW_DOWNLOAD_DIR = SOURCE_DATA_DIR / 'gff3'
-    NEW_DOWNLOAD_DIR.mkdir(exist_ok=True)
-    NEW_DB_DIR = SOURCE_DATA_DIR / 'speciesDB'
-    NEW_DB_DIR.mkdir(exist_ok=True)
-    GENERAL_DB_DIR = SOURCE_DATA_DIR / 'genomesDB'
-    GENERAL_DB_DIR.mkdir(exist_ok=True)
-    ERRORLOG_DIR = HOME_DIR / 'Desktop' / 'tfm_comav' / 'tfm_errorlog'
-    ERRORLOG_DIR.mkdir(exist_ok=True)
-
 elif USER == 'anastasiya':
     BASE_DIR = HOME_DIR / 'Desktop' / 'TFM' / 'tfm_mockup'
     SOURCE_DATA_DIR = HOME_DIR / 'Desktop' / 'TFM' / 'tfm_mockup_data'
@@ -35,6 +19,18 @@ elif USER == 'anastasiya':
     GENERAL_DB_DIR = SOURCE_DATA_DIR / 'genomesDB'
     GENERAL_DB_DIR.mkdir(exist_ok=True)
     ERRORLOG_DIR = HOME_DIR / 'Desktop' / 'TFM' / 'tfm_errorlog'
+    ERRORLOG_DIR.mkdir(exist_ok=True)
+
+elif USER == 'intron_docker':
+    BASE_DIR = HOME_DIR / 'TFM_aonofriychuk' / 'tfm_scripts'
+    SOURCE_DATA_DIR = HOME_DIR / 'TFM_aonofriychuk' / 'tfm_data'
+    NEW_DOWNLOAD_DIR = SOURCE_DATA_DIR / 'gff3'
+    NEW_DOWNLOAD_DIR.mkdir(exist_ok=True)
+    NEW_DB_DIR = SOURCE_DATA_DIR / 'speciesDB'
+    NEW_DB_DIR.mkdir(exist_ok=True)
+    GENERAL_DB_DIR = SOURCE_DATA_DIR / 'genomesDB'
+    GENERAL_DB_DIR.mkdir(exist_ok=True)
+    ERRORLOG_DIR = HOME_DIR / 'TFM_aonofriychuk' / 'tfm_errorlog'
     ERRORLOG_DIR.mkdir(exist_ok=True)
 
 
