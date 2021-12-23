@@ -99,7 +99,7 @@ av_taxons = {'kingdom': 'Kingdom', 'phylum': 'Phylum', 'class_': 'Class',
 
 app.layout = html.Div([
 	# Title
-	html.H1("Intronic analysis across species", 
+	html.H1("Intronic variation analysis across species", 
 		style={'text-align': 'center', 'font-family': '"Arial", Arial, sans-serif'}),
 	# Selctors
 	html.Div(id='data_selection', children = [
@@ -132,7 +132,7 @@ app.layout = html.Div([
 				html.Tbody([
 					html.Tr(
 						[html.Td(
-							html.H3("Select taxa to compare genomes:", 
+							html.H3("Select taxon to compare genomes:", 
 								style={'text-align': 'center', 'font-family': '"Arial", Arial, sans-serif',
 								'border-radius': "5px", 'background': "#E5ECF6"})),
 						html.Td(

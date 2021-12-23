@@ -82,7 +82,6 @@ def gff_to_db(species_name, db, gene_dict, trans_dict, exon_dict):
     exon_id = CharField()
     start = BigIntegerField()
     end = BigIntegerField()
-    exon_length = IntegerField()
     strand = CharField(max_length = 1)
     transcript = ForeignKeyField(Transcript, backref='exons')
 

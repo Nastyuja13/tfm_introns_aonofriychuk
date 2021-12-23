@@ -183,7 +183,6 @@ if __name__ == '__main__':
     db.create_tables([Taxonomy])
 
     cur = db.execute_sql('SELECT gff_name, name FROM species')
-    #cur = db.execute_sql('SELECT s.gff_name_id, spc.name FROM stats s JOIN species spc ON (s.gff_name_id = spc.gff_name)')
 
     species = [{'gff_name': species[0], 'name': species[1]} for species in cur.fetchall()]
 

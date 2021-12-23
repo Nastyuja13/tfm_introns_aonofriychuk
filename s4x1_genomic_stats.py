@@ -5,7 +5,6 @@ import pandas as pd
 import s4x2_genome_stat_funcs as gs
 import s4x3_genomic_stats_tables as gst
 
-###
 
 if __name__ == '__main__':
 
@@ -17,17 +16,6 @@ if __name__ == '__main__':
 	cur = db_connect.cursor()
 
 	cur.execute('SELECT gff_name, species, species_type, genome_length FROM species')
-	# df1 = pd.read_sql_query('SELECT gff_name, species, species_type, genome_length FROM species WHERE species_type LIKE "fungi" LIMIT 10', db_connect)
-	# df2 = pd.read_sql_query('SELECT gff_name, species, species_type, genome_length FROM species WHERE species_type LIKE "protists" LIMIT 10', db_connect)
-	# df3 = pd.read_sql_query('SELECT gff_name, species, species_type, genome_length FROM species WHERE species_type LIKE "metazoa" LIMIT 10', db_connect)
-	# df4 = pd.read_sql_query('SELECT gff_name, species, species_type, genome_length FROM species WHERE species_type LIKE "plant" LIMIT 10', db_connect)
-	# df5 = pd.read_sql_query('SELECT gff_name, species, species_type, genome_length FROM species WHERE species_type LIKE "main" LIMIT 10', db_connect)
-
-	# frames = [df1, df2, df3, df4, df5]
-	# df = pd.concat(frames)
-	# df = df.reset_index(drop=True)
-
-	# gff3s = [{'gff_name': df['gff_name'][index], 'sql': df['gff_name'][index] + '.sql', 'species': df['species'][index], 'species_type': df['species_type'][index], 'genome_length': df['genome_length'][index]} for index, row in df.iterrows()]
 
 	gff3s = [{'gff_name': gff3[0], 'sql': gff3[0] + '.sql', 'species': gff3[1], 'species_type': gff3[2], 'genome_length': gff3[3]} for gff3 in cur.fetchall()]
 
