@@ -190,12 +190,12 @@ app.layout = html.Div([
 								value=['gene_num', 'gene_dens', 'avg_gene_len', 
 								'avg_intron_num_per_gene', 'avg_intron_len'], 
 								style={})]),
-			dcc.Tab(label='Barchart of the number of genes', value='bar_num_genes'),
-			dcc.Tab(label='Barchart of the density of genes', value='bar_dens_genes'),
-			dcc.Tab(label='Barchart of the average gene length', value='bar_avg_gene_len'),
-			dcc.Tab(label='Barchart of the average exon length', value='bar_avg_exon_len'),
-			dcc.Tab(label='Barchart of the average number of introns', value='bar_num_introns'),
-			dcc.Tab(label='Barchart of the average intron length', value='bar_avg_intron_len'),
+			dcc.Tab(label='Bar chart of the number of genes', value='bar_num_genes'),
+			dcc.Tab(label='Bar chart of the density of genes', value='bar_dens_genes'),
+			dcc.Tab(label='Bar chart of the average gene length', value='bar_avg_gene_len'),
+			dcc.Tab(label='Bar chart of the average exon length', value='bar_avg_exon_len'),
+			dcc.Tab(label='Bar chart of the average number of introns', value='bar_num_introns'),
+			dcc.Tab(label='Bar chart of the average intron length', value='bar_avg_intron_len'),
 			dcc.Tab(label='Intron length boxplot', value='boxplot'),
 			dcc.Tab(label='Intron length distribution', value='distribution')
 			]

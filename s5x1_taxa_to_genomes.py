@@ -252,7 +252,7 @@ if __name__ == '__main__':
 
     with db.atomic():
 
-        print('Inserting Species Stats Info into DB')
+        print('Inserting Species Taxa Info into DB')
         for batch in chunked(taxa, 100):
             Taxonomy.insert_many(batch).execute()
 
